@@ -1,5 +1,6 @@
 #include <glad/glad.h>
 #include <glfw3.h>
+#include <vector>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
@@ -15,23 +16,23 @@
 
 #include <iostream>
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void mouse_callback(GLFWwindow *window, double xpos, double ypos);
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1600;
+const unsigned int SCR_HEIGHT = 900;
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(-4.5f, 4.5f, 15.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
 
 // timing
-float deltaTime = 0.0f;	// time between current frame and last frame
+float deltaTime = 0.0f; // time between current frame and last frame
 float lastFrame = 0.0f;
 
 int main()
@@ -49,7 +50,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "CS465 - OpenGL Cubes and Camera Movement - Bao Ngo", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -83,53 +84,63 @@ int main()
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
 
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+        0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+        -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
 
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+        -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+        -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
 
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+        0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+        0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
 
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+        0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
 
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-         0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-    };
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+        0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+        -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f};
     // world space positions of our cubes
-    glm::vec3 cubePositions[] = {
-        glm::vec3( 0.0f,  0.0f,  0.0f),
-        glm::vec3( -1.0f,  0.0f,  0.0f),
-    };
+
+    std::vector<glm::vec3> cubePositionsVector;
+    for (int level = 0; level < 9; level++)
+    {
+        for (int i = 0; i < 10 - level; i++)
+        {
+            for (int j = 0; j < 10 - level; j++)
+            {
+                cubePositionsVector.push_back(glm::vec3(-i * 1.0f - level * 0.5f, level * 1.0f, -j * 1.0f - level * 0.5f));
+            }
+        }
+    }
+    // spinning top cube
+    glm::vec3 topCubePosition = glm::vec3(-4.5f, 9.0f, -4.5f);
+
     unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -140,14 +151,13 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
     // texture coord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-
-    // load and create a texture 
+    // load and create a texture
     // -------------------------
     unsigned int texture1, texture2;
     // texture 1
@@ -180,7 +190,6 @@ int main()
     ourShader.use();
     ourShader.setInt("texture1", 0);
 
-
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -197,13 +206,12 @@ int main()
 
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // bind textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, texture1);
-
 
         // activate shader
         ourShader.use();
@@ -218,16 +226,23 @@ int main()
 
         // render boxes
         glBindVertexArray(VAO);
-        for (unsigned int i = 0; i < 2; i++)
+        for (unsigned int i = 0; i < cubePositionsVector.size(); i++)
         {
             // calculate the model matrix for each object and pass it to shader before drawing
             glm::mat4 model = glm::mat4(1.0f); // make sure to initialize matrix to identity matrix first
-            model = glm::translate(model, cubePositions[i]);
+            model = glm::translate(model, cubePositionsVector[i]);
             ourShader.setMat4("model", model);
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+        // render top cube
+        glm::mat4 model = glm::mat4(1.0f); 
+        model = glm::translate(model, topCubePosition);
+        model = glm::scale(model, glm::vec3(0.6f, 0.6f, 0.6f)); //scale down the cube 0.6 times
+        model = glm::rotate(model, glm::radians(static_cast<float>(glfwGetTime()) * 50.0f), glm::vec3(1.0f, 1.0f, 1.0f)); // rotate the cube on all axis
+        ourShader.setMat4("model", model);
 
+        glDrawArrays(GL_TRIANGLES, 0, 36);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -260,21 +275,24 @@ void processInput(GLFWwindow *window)
         camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		camera.ProcessKeyboard(UP, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+        camera.ProcessKeyboard(DOWN, deltaTime);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
+    // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
 
-
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
 {
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
@@ -297,7 +315,7 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
 {
     camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
