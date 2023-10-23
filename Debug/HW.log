@@ -1,0 +1,4 @@
+﻿  Source.cpp
+D:\hw\HW\Source.cpp(152,28): warning C4101: 'texture2': unreferenced local variable
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+  HW.vcxproj -> D:\hw\HW\Debug\HW.exe
