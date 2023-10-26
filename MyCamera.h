@@ -2,8 +2,9 @@
 #define CAMERA_H
 
 #include <glad/glad.h>
-#include "glm/glm/glm.hpp"
-#include "glm/glm/gtc/matrix_transform.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <vector>
 
@@ -111,11 +112,11 @@ public:
     // processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
     void ProcessMouseScroll(float yoffset)
     {
-        Zoom -= (float)yoffset;
-        if (Zoom < 1.0f)
-            Zoom = 1.0f;
-        if (Zoom > 45.0f)
-            Zoom = 45.0f;
+        MovementSpeed += (float)yoffset;
+        if (MovementSpeed < 1.0f)
+            MovementSpeed = 1.0f;
+        if (MovementSpeed > 15.0f)
+            MovementSpeed = 15.0f;
     }
 
 private:

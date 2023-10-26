@@ -1,1 +1,3 @@
-﻿  HW.vcxproj -> D:\hw\HW\Debug\HW.exe
+﻿  Source.cpp
+D:\hw\HW\Source.cpp(160,28): warning C4101: 'texture2': unreferenced local variable
+  HW.vcxproj -> D:\hw\HW\Debug\HW.exe
